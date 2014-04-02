@@ -14,7 +14,8 @@ $(document).ready(function() {
 		}
 		else {
 			$('#worktable').append('<div class="workEntry" id="' + currentId + '"><span class="entryName">' + currentId + '</span><span class="loggedTime">0</span></div>');
-
+			$("#" + currentId + " span.loggedTime").data('time', 0);
+			
 			timer = setInterval(function() { updateLog(currentId, 1) }, 1000);
 		}
 		
