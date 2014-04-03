@@ -1,3 +1,17 @@
 body {
+	font-family: Arial;
+}
 
+
+#worktable span {
+	display: inline-block;
+	width: 200px;
+}
+
+#entryNameInput {
+	width: 200px;
+}
+
+#worktable div:nth-child(2n+1) {
+	background-color: #efefef;
 }
