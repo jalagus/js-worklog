@@ -50,8 +50,6 @@ function updateLogEntry(id) {
 	ent.endTime = new Date();
 	localStorage.setItem(id, JSON.stringify(ent));
 
-	console.log(ent);
-
 	return Date.parse(ent.endTime) - Date.parse(ent.startTime);	
 }
 
@@ -64,7 +62,23 @@ function logEntry(workId, startTime, endTime)
 
 function formatTime(timeInMs) {
 	seconds = Math.floor(timeInMs / 1000);
-	return (seconds + " seconds");
+
+	str = "";
+
+	if (seconds > 3600) {
+		hours = Math.floor(seconds / 3600);
+		seconds -= hours * 3600;
+		minutes = Math.floor(seconds / 60);
+
+		str += huors + " hours " + minutes + " minutes ";
+	}
+	else if (seconds > 60) {
+		str += Math.floor(seconds / 60) + " minutes ";
+	}
+	
+	str += (seconds % 60) + " seconds";
+	
+	return str;
 }
 
 function printList() {
