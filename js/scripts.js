@@ -11,25 +11,13 @@ $(document).ready(function() {
 		if (timer) {
 			clearInterval(timer);
 		}
-
-		if ($("#" + currentId).length) {
-			timer = setInterval(function() { updateLog(currentId, 1) }, 1000);
-		}
-		else {
-			$('#worktable').append('<div class="workEntry" id="' + currentId + '"><span class="entryName">' + currentId + '</span><span class="loggedTime">0</span></div>');
-			$("#" + currentId + " span.loggedTime").data('time', 0);
 			
-			runningId = createLogEntry(currentId);
+		runningId = createLogEntry(currentId);
 
-			timer = setInterval(function() { 
-				time = updateLogEntry(runningId);
-				updateTimeField(currentId, Math.floor(time / 1000));
-			}, 1000);
-		}
-		
-		$(".workEntry").click(function() {
-			$('#entryNameInput').val($(this).find(".entryName").html());
-		});
+		timer = setInterval(function() { 
+			time = updateLogEntry(runningId);
+			printList();
+		}, 1000);
 	});
 
 	$('#stopLog').click(function() {
@@ -68,11 +56,6 @@ function updateLogEntry(id) {
 	return Date.parse(ent.endTime) - Date.parse(ent.startTime);	
 }
 
-function updateTimeField(id, time) {
-	elem_id = "#" + id + " span.loggedTime";
-	$(elem_id).html(Math.floor(time / 60) + " minutes " + (time % 60) + " seconds");
-}
-
 function logEntry(workId, startTime, endTime)
 {
 	this.workId = workId;
@@ -80,16 +63,32 @@ function logEntry(workId, startTime, endTime)
 	this.endTime = endTime;
 }
 
+function formatTime(timeInMs) {
+	seconds = Math.floor(timeInMs / 1000);
+	return (seconds + " seconds");
+}
 
 function printList() {
+	$('#worktable').html("");
+
 	sums = {};
 
 	for (var key in localStorage) {
 		ent = JSON.parse(localStorage.getItem(key));
-		sums[ent.workId] = Date.parse(ent.endTime) - Date.parse(ent.startTime);
+		if (sums[ent.workId]) {
+			sums[ent.workId] += Date.parse(ent.endTime) - Date.parse(ent.startTime);
+		}
+		else  {
+			sums[ent.workId] = 0;
+		}
 	}
 
 	for (var key in sums) {
-		console.log(key + " - " + sums[key]);		
+		$('#worktable').append('<div class="workEntry" id="' + key + '"><span class="entryName">' + key + 
+			'</span><span class="loggedTime">' + formatTime(sums[key]) + '</span></div>');
 	}
+
+	$(".workEntry").click(function() {
+		$('#entryNameInput').val($(this).find(".entryName").html());
+	});
 }
