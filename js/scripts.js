@@ -1,10 +1,10 @@
 var timer;
 var currentId;
-var idCounter = 0;
 var runningId = 0;
 
 $(document).ready(function() {
-	localStorage
+	printList();
+
 	$('#startLog').click(function() {
 		currentId = $('#entryNameInput').val();
 
@@ -30,28 +30,27 @@ $(document).ready(function() {
 
 function createLogEntry(workId) {
 	var entry = new logEntry(workId, new Date(), new Date());
-	localStorage.setItem(idCounter, JSON.stringify(entry));
+	idCounter = 0;
 
-	idCounter++;
-	
-	return idCounter - 1;
-}
+	if (localStorage.length > 0) {
+		idCounter = localStorage.key(localStorage.length - 1);
 
-function sumLogEntries(workId) {
-	sum = 0;
-
-	for (i = 0; i < idCounter; i++) {
-		ent = JSON.parse(localStorage.getItem(i));
-		sum += Date.parse(ent.endTime) - Date.parse(ent.startTime);
+		while(idCounter in localStorage) {
+			idCounter++;
+		}
 	}
 
-	return sum;
+	localStorage.setItem(idCounter, JSON.stringify(entry));
+	
+	return idCounter;
 }
 
 function updateLogEntry(id) {
 	ent = JSON.parse(localStorage.getItem(id));
 	ent.endTime = new Date();
 	localStorage.setItem(id, JSON.stringify(ent));
+
+	console.log(ent);
 
 	return Date.parse(ent.endTime) - Date.parse(ent.startTime);	
 }
@@ -75,15 +74,15 @@ function printList() {
 
 	for (var key in localStorage) {
 		ent = JSON.parse(localStorage.getItem(key));
-		if (sums[ent.workId]) {
-			sums[ent.workId] += Date.parse(ent.endTime) - Date.parse(ent.startTime);
-		}
-		else  {
+		
+		if (!(ent.workId in sums))  {
 			sums[ent.workId] = 0;
 		}
+
+		sums[ent.workId] += Date.parse(ent.endTime) - Date.parse(ent.startTime);
 	}
 
-	for (var key in sums) {
+	for (var key in sums) {		
 		$('#worktable').append('<div class="workEntry" id="' + key + '"><span class="entryName">' + key + 
 			'</span><span class="loggedTime">' + formatTime(sums[key]) + '</span></div>');
 	}
