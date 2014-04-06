@@ -25,7 +25,15 @@ $(document).ready(function() {
 			clearInterval(timer);
 		}
 	});
-
+	$('#exportLog').click(function() {
+		csvData = "data:text/plain;base64," + btoa(JSON.stringify(localStorage));
+        $(this)
+            .attr({
+            'download': "export.txt",
+                'href': csvData,
+                'target': '_blank'
+        });
+	});
 });
 
 function createLogEntry(workId) {
@@ -65,14 +73,14 @@ function formatTime(timeInMs) {
 
 	str = "";
 
-	if (seconds > 3600) {
+	if (seconds >= 3600) {
 		hours = Math.floor(seconds / 3600);
 		seconds -= hours * 3600;
 		minutes = Math.floor(seconds / 60);
 
 		str += huors + " hours " + minutes + " minutes ";
 	}
-	else if (seconds > 60) {
+	else if (seconds >= 60) {
 		str += Math.floor(seconds / 60) + " minutes ";
 	}
 	
